@@ -107,31 +107,6 @@ def flatten_record(record):
     """Flatten a single Schedule E API record into a flat dict."""
     committee = record.get("committee") or {}
 
-    # Calculated: human-readable race name
-    office = record.get("candidate_office", "") or ""
-    _state = record.get("candidate_office_state", "") or ""
-    district = record.get("candidate_office_district", "") or ""
-    if office == "P":
-        race = "President"
-    elif office == "S":
-        race = f"{_state} SEN"
-    elif office == "H":
-        race = f"{_state}-{str(district).zfill(2)}"
-    else:
-        race = ""
-
-    # Calculated: effective party (flips party when oppose ad)
-    cand_party = record.get("candidate_party", "") or ""
-    so = record.get("support_oppose_indicator", "") or ""
-    if (cand_party == "REP" and so == "S") or (cand_party == "DEM" and so == "O"):
-        effective_party = "R"
-    elif (cand_party == "DEM" and so == "S") or (cand_party == "REP" and so == "O"):
-        effective_party = "D"
-    elif cand_party == "DFL" and so == "S":
-        effective_party = "D"
-    else:
-        effective_party = "I"
-
     return {
         "amendment_indicator": record.get("amendment_indicator"),
         "amendment_indicator_desc": record.get("amendment_indicator_desc"),
@@ -209,9 +184,6 @@ def flatten_record(record):
         "conduit_committee_name": record.get("conduit_committee_name"),
         "conduit_committee_city": record.get("conduit_committee_city"),
         "conduit_committee_state": record.get("conduit_committee_state"),
-        # Calculated columns
-        "race": race,
-        "effective_party": effective_party,
     }
 
 

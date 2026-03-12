@@ -39,34 +39,3 @@ jobs:
           git diff --cached --quiet || git commit -m "Update Schedule E data - $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
 
-  pull-schedule-b:
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    needs: pull-schedule-e  # Run sequentially to avoid git push conflicts
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          ref: main  # Pull latest after Schedule E commit
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install pandas requests
-
-      - name: Pull Schedule B (Disbursements)
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: python scripts/pull_schedule_b.py
-
-      - name: Commit Schedule B data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/FECScheduleB_latest.csv
-          git diff --cached --quiet || git commit -m "Update Schedule B data - $(date -u '+%Y-%m-%d %H:%M UTC')"
-          git push
